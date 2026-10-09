@@ -1,0 +1,150 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct Mahasiswa {
+    int nim;
+    char nama[100];
+    float nilai;
+    struct Mahasiswa *next;
+};
+
+struct Mahasiswa *head = NULL;
+
+void tambahData(int nim, char nama[], float nilai) {
+    struct Mahasiswa *newNode = (struct Mahasiswa*) malloc(sizeof(struct Mahasiswa));
+    newNode->nim = nim;
+    strcpy(newNode->nama, nama);
+    newNode->nilai = nilai;
+    newNode->next = NULL;
+
+    if (head == NULL) {
+        head = newNode;
+        printf("Data %s (NIM %d) berhasil ditambahkan sebagai head.\n", nama, nim);
+        return;
+    }
+
+    struct Mahasiswa *temp = head;
+    while (temp->next != NULL) {
+        temp = temp->next;
+    }
+    temp->next = newNode;
+    printf("Data %s (NIM %d) berhasil ditambahkan.\n", nama, nim);
+}
+
+void hapusData(int nim) {
+    if (head == NULL) {
+        printf("Linked list kosong, tidak ada data yang bisa dihapus.\n");
+        return;
+    }
+
+    struct Mahasiswa *temp = head;
+    struct Mahasiswa *prev = NULL;
+
+    if (temp != NULL && temp->nim == nim) {
+        head = temp->next;
+        printf("Data %s (NIM %d) [Head] berhasil dihapus.\n", temp->nama, nim);
+        free(temp);         
+        return;
+    }
+
+    while (temp != NULL && temp->nim != nim) {
+        prev = temp;
+        temp = temp->next;
+    }
+
+    if (temp == NULL) {
+        printf("Data NIM %d tidak ditemukan.\n", nim);
+        return;
+    }
+
+    prev->next = temp->next;
+    printf("Data %s (NIM %d) berhasil dihapus.\n", temp->nama, nim);
+    free(temp);
+}
+
+void hitungRataRata() {
+    if (head == NULL) {
+        printf("Tidak dapat menghitung rata-rata, data mahasiswa kosong.\n");
+        return;
+    }
+
+    struct Mahasiswa *temp = head;
+    float totalNilai = 0.0;
+    int jumlahMahasiswa = 0;
+
+    while (temp != NULL) {
+        totalNilai += temp->nilai;
+        jumlahMahasiswa++;         
+        temp = temp->next;         
+    }
+
+    float rataRata = totalNilai / jumlahMahasiswa;
+    printf("\n=== INFORMASI NILAI ===\n");
+    printf("Total Mahasiswa : %d\n", jumlahMahasiswa);
+    printf("Rata-rata Nilai : %.2f\n", rataRata);
+    printf("=======================\n\n");
+}
+
+void cetakData() {
+    struct Mahasiswa *temp = head;
+    if (temp == NULL) {
+        printf("Linked list kosong.\n");
+        return;
+    }
+
+    printf("\nData Mahasiswa dalam Linked List:\n");
+    while (temp != NULL) {
+        printf("[NIM: %d, Nama: %s, Nilai: %.2f] -> ", temp->nim, temp->nama, temp->nilai);
+        temp = temp->next;
+    }
+    printf("NULL\n\n");
+}
+
+int main() {
+    int pilihan;
+    int nim;
+    char nama[100];
+    float nilai;
+
+    do {
+        printf("\n===== MENU LINKED LIST DATA MAHASISWA =====\n");
+        printf("1. Tambah data mahasiswa\n");
+        printf("2. Hapus data mahasiswa\n");
+        printf("3. Tampilkan semua data\n");
+        printf("4. Hitung rata-rata nilai\n");
+        printf("5. Keluar\n");
+        printf("Pilih menu: ");
+        scanf("%d", &pilihan);
+
+        switch(pilihan) {
+            case 1:
+                printf("\nMasukkan NIM   : ");
+                scanf("%d", &nim);
+                printf("Masukkan Nama  : ");
+                scanf(" %[^\n]", nama);
+                printf("Masukkan Nilai : ");
+                scanf("%f", &nilai);
+                tambahData(nim, nama, nilai);
+                break;
+            case 2:
+                printf("\nMasukkan NIM yang akan dihapus: ");
+                scanf("%d", &nim);
+                hapusData(nim);
+                break;
+            case 3:
+                cetakData();
+                break;
+            case 4:
+                hitungRataRata();
+                break;
+            case 5:
+                printf("\nKeluar dari program. Terima kasih!\n");
+                break;
+            default:
+                printf("\nPilihan tidak valid! Silakan coba lagi.\n");
+        }
+    } while (pilihan != 5);
+
+    return 0;
+}
